@@ -64,7 +64,7 @@ Where:
 
  🌐 Live Application
 
-Access the live application here: **[Hugging Face Space Link](https://huggingface.co/spaces/yourusername/fitplan-ai)**
+Access the live application here: **[Hugging Face Space Link](https://huggingface.co/spaces/Rajaluxanaa/fitplan-ai)**
 
  📸 Screenshots
 
