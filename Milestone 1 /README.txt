@@ -1,4 +1,4 @@
- FitPlan-AI - Milestone 1: Fitness Profile & BMI Calculator 
+Personalized-FitPlan-AI-Generator  -  Milestone 1: Fitness Profile & BMI Calculator 
 
 📌 Objective
 The objective of this milestone is to create an interactive **Fitness Profile & BMI Calculator** application that allows users to:
