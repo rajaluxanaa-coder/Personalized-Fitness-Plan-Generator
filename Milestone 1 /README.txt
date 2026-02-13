@@ -92,9 +92,9 @@ Access the live application here: **[Hugging Face Space Link](https://huggingfac
 - ✅ Example data in sidebar
 
  📁 Project Structure
-FitPlan-AI/
-└── Milestone1/
-    ├── stream_lit.py
+Personalized-FitPlan-AI-Generator/
+└── Milestone 1/
+    ├── streamlit_app.py
     ├── requirements.txt
     ├── README.txt
     └── Screenshots/
