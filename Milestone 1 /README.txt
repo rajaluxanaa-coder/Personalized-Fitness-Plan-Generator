@@ -1,4 +1,4 @@
-Personalized-FitPlan-AI-Generator  -  Milestone 1: Fitness Profile & BMI Calculator 
+Personalized-Fitness-Plan-Generator  -  Milestone 1: Fitness Profile & BMI Calculator 
 
 📌 Objective
 The objective of this milestone is to create an interactive **Fitness Profile & BMI Calculator** application that allows users to:
@@ -64,12 +64,12 @@ Where:
 
  🌐 Live Application
 
-Access the live application here: **[Hugging Face Space Link](https://huggingface.co/spaces/Rajaluxanaa/fitplan-ai)**
+Access the live application here: **[Hugging Face Space Link](https://huggingface.co/spaces/rajaluxanaa-coder/Personalized-Fitness-Plan-Generator)**
 
  📸 Screenshots
 
  Application Form
-![Application Form](screenshots/screenshot1.png)
+![Application Form](Screenshots/Screenshot1.png)
 *Main input form with personal and fitness details*
 
  BMI Results
@@ -92,7 +92,7 @@ Access the live application here: **[Hugging Face Space Link](https://huggingfac
 - ✅ Example data in sidebar
 
  📁 Project Structure
-Personalized-FitPlan-AI-Generator/
+Personalized-Fitness-Plan-Generator/
 └── Milestone 1/
     ├── streamlit_app.py
     ├── requirements.txt
