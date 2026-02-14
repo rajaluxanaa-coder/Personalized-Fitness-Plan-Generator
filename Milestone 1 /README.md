@@ -66,4 +66,4 @@ Where:
 
 ## 🌐 Live Application
 
-Access the live application here: [Hugging Face Space Link](https://huggingface.co/spaces/rajaluxanaa-coder/Personalized-Fitness-Plan-Generator)
+Access the live application here: [Hugging Face Space Link](https://huggingface.co/spaces/Rajaluxanaa/FitPlan_AI)
