@@ -56,51 +56,12 @@ Where:
 
  💻 Technologies Used
 
-- **Python 3.9+**: Core programming language
-- **Streamlit**: Web application framework
-- **Pandas**: Data manipulation and display
-- **Hugging Face Spaces**: Deployment platform
-- **Git**: Version control
+- *Python 3.9+*: Core programming language
+- *Streamlit*: Web application framework
+- *Pandas*: Data manipulation and display
+- *Hugging Face Spaces*: Deployment platform
+- *Git*: Version control
 
  🌐 Live Application
 
-Access the live application here: **[Hugging Face Space Link](https://huggingface.co/spaces/rajaluxanaa-coder/Personalized-Fitness-Plan-Generator)**
-
- 📸 Screenshots
-
- Application Form
-![Application Form](Screenshots/Screenshot1.png)
-*Main input form with personal and fitness details*
-
- BMI Results
-![BMI Results](screenshots/screenshot2.png)
-*BMI calculation results with category and recommendations*
-
- Profile Summary
-![Profile Summary](screenshots/screenshot3.png)
-*Complete fitness profile with downloadable option*
-
- 🎯 Features Implemented
-
-- ✅ BMI calculation with automatic categorization
-- ✅ Form validation with error handling
-- ✅ Personalized health recommendations
-- ✅ Fitness profile generation
-- ✅ Profile download as text file
-- ✅ Responsive design with custom CSS
-- ✅ Session state management
-- ✅ Example data in sidebar
-
- 📁 Project Structure
-Personalized-Fitness-Plan-Generator/
-└── Milestone 1/
-    ├── streamlit_app.py
-    ├── requirements.txt
-    ├── README.txt
-    └── Screenshots/
-        ├── Screenshot1.png
-        ├── Screenshot2.png
-        └── Screenshot3.png
-        ├── Screenshot4.png
-        ├── Screenshot5.png
-        └── Screenshot6.png
+Access the live application here: [Hugging Face Space Link](https://huggingface.co/spaces/rajaluxanaa-coder/Personalized-Fitness-Plan-Generator)
