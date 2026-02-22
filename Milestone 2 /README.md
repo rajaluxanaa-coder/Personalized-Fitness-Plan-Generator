@@ -1,4 +1,4 @@
-##Personalized-Fitness-Plan-Generator - Milestone 2: AI-Powered 5-Day Workout Plan Generator
+#Personalized-Fitness-Plan-Generator - Milestone 2: AI-Powered 5-Day Workout Plan Generator
 
 ##📌 Objective
 
@@ -14,10 +14,10 @@ BMI = weight(kg) / (height(m))²
 
 Where:
 
-· Weight is measured in kilograms (kg)
-· Height is measured in meters (m)
+· **Weight** is measured in kilograms (kg)
+· **Height** is measured in meters (m)
 
-BMI Categories:
+##BMI Categories:
 
 Category BMI Range Health Recommendation
 Underweight < 18.5 Focus on muscle building & nutrient-dense foods
