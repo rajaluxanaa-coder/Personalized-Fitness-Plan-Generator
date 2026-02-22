@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import datetime
 from prompt_builder import build_prompt
 from model_api import query_model
+import re
 
 # Page configuration
 st.set_page_config(
@@ -36,12 +37,60 @@ st.markdown("""
     .category-obese { color: #e74c3c; font-weight: bold; }
     .workout-plan {
         background-color: #f8f9fa;
-        padding: 20px;
+        padding: 25px;
         border-radius: 10px;
-        border: 1px solid #ddd;
+        border: 2px solid #4CAF50;
         margin: 20px 0;
         white-space: pre-wrap;
-        font-family: monospace;
+        font-family: 'Arial', sans-serif;
+        line-height: 1.8;
+    }
+    .day-header {
+        color: #4CAF50;
+        font-size: 1.4em;
+        font-weight: bold;
+        margin-top: 25px;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #4CAF50;
+        padding-bottom: 8px;
+    }
+    .section-header {
+        color: #2196F3;
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+    .exercise-item {
+        margin-left: 20px;
+        margin-bottom: 8px;
+    }
+    .warning-box {
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #fff3cd;
+        border: 1px solid #ffeeba;
+        color: #856404;
+        margin: 15px 0;
+    }
+    .exercise-details {
+        margin-left: 30px;
+        color: #555;
+        font-size: 0.95em;
+    }
+    /* Fix for calendar icon */
+    .custom-calendar {
+        display: flex;
+        align-items: center;
+        margin: 20px 0;
+    }
+    .custom-calendar span {
+        font-size: 32px;
+        margin-right: 10px;
+    }
+    .custom-calendar h2 {
+        margin: 0;
+        color: #333;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -56,6 +105,8 @@ if 'profile_created' not in st.session_state:
     st.session_state.profile_data = {}
 if 'workout_plan' not in st.session_state:
     st.session_state.workout_plan = None
+if 'generation_attempts' not in st.session_state:
+    st.session_state.generation_attempts = 0
 
 # BMI Calculation Function
 def calculate_bmi(weight_kg, height_cm):
@@ -84,6 +135,100 @@ def get_bmi_description(category):
         "Obese": "Consult healthcare providers for personalized weight management plans."
     }
     return descriptions.get(category, "")
+
+def clean_markdown(text):
+    """Remove markdown symbols like # and * from text"""
+    if not text:
+        return text
+    
+    # Remove markdown headers (# symbols)
+    text = re.sub(r'#{1,6}\s*', '', text)
+    
+    # Remove markdown bold/italic (* and **)
+    text = re.sub(r'\*\*([^*]+)\*\*', r'\1', text)  # Remove **bold**
+    text = re.sub(r'\*([^*]+)\*', r'\1', text)      # Remove *italic*
+    
+    # Remove markdown bullets
+    text = re.sub(r'^\s*[-*+]\s+', '  • ', text, flags=re.MULTILINE)
+    
+    # Remove markdown links
+    text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text)
+    
+    return text
+
+def format_workout_plan(plan):
+    """Format the workout plan with clean styling (no markdown symbols)"""
+    if not plan:
+        return plan
+    
+    # First clean markdown symbols
+    plan = clean_markdown(plan)
+    
+    lines = plan.split('\n')
+    formatted_lines = []
+    
+    for line in lines:
+        line = line.strip()
+        if not line:
+            formatted_lines.append('')
+            continue
+        
+        # Check if line contains day header
+        upper_line = line.upper()
+        is_day_header = False
+        
+        for i in range(1, 6):
+            if (f"DAY {i}" in upper_line or 
+                f"DAY {i}:" in upper_line or 
+                f"DAY {i} -" in upper_line):
+                # Add separator before each day (except first)
+                if i > 1:
+                    formatted_lines.append('')
+                    formatted_lines.append('─' * 60)
+                formatted_lines.append(f'📅 {line}')
+                formatted_lines.append('─' * 60)
+                is_day_header = True
+                break
+        
+        if not is_day_header:
+            # Format workout sections
+            if "WARM-UP" in upper_line:
+                formatted_lines.append('')
+                formatted_lines.append(f'🔥 {line}')
+                formatted_lines.append('')
+            elif "MAIN WORKOUT" in upper_line:
+                formatted_lines.append('')
+                formatted_lines.append(f'💪 {line}')
+                formatted_lines.append('')
+            elif "COOL-DOWN" in upper_line:
+                formatted_lines.append('')
+                formatted_lines.append(f'🧘 {line}')
+                formatted_lines.append('')
+            elif "REST DAY" in upper_line:
+                formatted_lines.append('')
+                formatted_lines.append(f'😴 {line}')
+                formatted_lines.append('')
+            elif "SETS" in upper_line or "REPS" in upper_line or "REST" in upper_line:
+                formatted_lines.append(f'   {line}')
+            elif line.startswith('•') or line.startswith('-'):
+                formatted_lines.append(f'  {line}')
+            else:
+                formatted_lines.append(line)
+    
+    return '\n'.join(formatted_lines)
+
+def count_days_in_plan(plan):
+    """Count how many days are present in the workout plan"""
+    if not plan:
+        return 0
+    plan_upper = plan.upper()
+    days = 0
+    for i in range(1, 6):
+        if (f"DAY {i}" in plan_upper or 
+            f"DAY {i}:" in plan_upper or 
+            f"DAY {i} -" in plan_upper):
+            days += 1
+    return days
 
 # Form validation function
 def validate_inputs(name, height, weight):
@@ -178,7 +323,8 @@ with st.form("fitness_form"):
                 'equipment': equipment,
                 'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M")
             }
-            st.session_state.workout_plan = None  # Reset workout plan when new profile is created
+            st.session_state.workout_plan = None
+            st.session_state.generation_attempts = 0
             
             st.success("✅ Profile created successfully!")
             st.rerun()
@@ -288,8 +434,10 @@ if st.session_state.profile_created:
                     
                     # Store in session state
                     st.session_state.workout_plan = workout_plan
+                    st.session_state.generation_attempts += 1
                     
                     st.success("✅ Workout plan generated successfully!")
+                    st.rerun()
                     
                 except Exception as e:
                     st.error(f"Error generating workout plan: {str(e)}")
@@ -300,24 +448,73 @@ if st.session_state.profile_created:
             st.session_state.profile_created = False
             st.session_state.profile_data = {}
             st.session_state.workout_plan = None
+            st.session_state.generation_attempts = 0
             st.rerun()
     
     # Display Workout Plan if generated
     if st.session_state.workout_plan:
-        st.markdown("### 📅 Your Personalized 5-Day Workout Schedule")
         st.markdown("---")
         
-        # Display the workout plan in a nice container
+        # Custom header without date
+        st.markdown("""
+        <div class="custom-calendar">
+            <span>📅</span>
+            <h2>Your Personalized 5-Day Workout Schedule</h2>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Check if the plan contains all 5 days
+        days_count = count_days_in_plan(st.session_state.workout_plan)
+        
+        if days_count < 5:
+            st.markdown(f"""
+            <div class="warning-box">
+                <strong>⚠️ Warning:</strong> The generated plan shows only {days_count} out of 5 days. 
+                Click "Generate Again" for a complete 5-day plan.
+                <br><br>
+                <strong>Tips for better results:</strong>
+                <ul style="margin-top: 5px; margin-bottom: 0;">
+                    <li>Try generating again - sometimes the model needs multiple attempts</li>
+                    <li>Make sure you have a stable internet connection</li>
+                    <li>If problem persists, check your HF_TOKEN</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Display generation attempt info
+        if st.session_state.generation_attempts > 1:
+            st.info(f"🔄 Generation attempt #{st.session_state.generation_attempts}")
+        
+        # Format and clean the workout plan (remove markdown symbols)
+        cleaned_plan = clean_markdown(st.session_state.workout_plan)
+        formatted_plan = format_workout_plan(cleaned_plan)
+        
         with st.container():
             st.markdown('<div class="workout-plan">', unsafe_allow_html=True)
-            st.markdown(st.session_state.workout_plan)
+            st.text(formatted_plan)  # Using st.text to ensure no markdown rendering
             st.markdown('</div>', unsafe_allow_html=True)
         
-        # Download buttons for both profile and workout plan
-        col11, col12 = st.columns(2)
+        # Action buttons for workout plan
+        st.markdown("### 📋 Plan Actions")
+        col11, col12, col13, col14 = st.columns(4)
         
         with col11:
-            # Export profile data
+            if st.button("🔄 Generate Again", use_container_width=True):
+                st.session_state.workout_plan = None
+                st.rerun()
+        
+        with col12:
+            # Download workout plan only
+            st.download_button(
+                label="📥 Download Plan",
+                data=st.session_state.workout_plan,
+                file_name=f"workout_plan_{data['name'].replace(' ', '_')}.txt",
+                mime="text/plain",
+                use_container_width=True
+            )
+        
+        with col13:
+            # Download complete report
             profile_text = f"""
 FITNESS PROFILE REPORT
 Generated: {data['timestamp']}
@@ -338,27 +535,34 @@ Primary Goal: {data['fitness_goal']}
 Experience Level: {data['fitness_level']}
 Available Equipment: {', '.join(data['equipment'])}
 
-WORKOUT PLAN
+{"="*60}
+PERSONALIZED 5-DAY WORKOUT PLAN
+{"="*60}
+
 {st.session_state.workout_plan}
             """
             
             st.download_button(
-                label="📥 Download Complete Report",
+                label="📥 Complete Report",
                 data=profile_text,
-                file_name=f"fitness_report_{data['name'].replace(' ', '_')}.txt",
+                file_name=f"complete_report_{data['name'].replace(' ', '_')}.txt",
                 mime="text/plain",
                 use_container_width=True
             )
         
-        with col12:
-            # Download only workout plan
-            st.download_button(
-                label="📥 Download Workout Plan Only",
-                data=st.session_state.workout_plan,
-                file_name=f"workout_plan_{data['name'].replace(' ', '_')}.txt",
-                mime="text/plain",
-                use_container_width=True
-            )
+        with col14:
+            if st.button("🏠 Back to Top", use_container_width=True):
+                st.rerun()
+        
+        # Add tips for getting better results
+        with st.expander("💡 Tips for better workout plans"):
+            st.markdown("""
+            - Be specific with your available equipment
+            - Try multiple generations - each plan is slightly different
+            - Regenerate after 4-6 weeks as you progress
+            - Combine goals if you have multiple focuses
+            - Always consult a fitness professional before starting
+            """)
 
 # Footer
 st.markdown("---")
@@ -368,7 +572,6 @@ st.markdown("""
     <p style='font-size: 12px;'>* Required fields | BMI is a screening tool, not a diagnostic measure | AI-generated plans should be reviewed by a professional</p>
 </div>
 """, unsafe_allow_html=True)
-
 # Sidebar with additional information
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/3043/3043650.png", width=100)
@@ -376,13 +579,13 @@ with st.sidebar:
     st.markdown("""
     **Body Mass Index (BMI)** is a simple measure that uses your height and weight to estimate body fat.
     
-    ### BMI Categories:
-    - **Underweight:** < 18.5
-    - **Normal:** 18.5 - 24.9
-    - **Overweight:** 25 - 29.9
-    - **Obese:** ≥ 30
+    BMI Categories:
+    - Underweight: < 18.5
+    - Normal: 18.5 - 24.9
+    - Overweight: 25 - 29.9
+    - Obese: ≥ 30
     
-    ### Tips for Accuracy:
+    Tips for Accuracy:
     - Measure height without shoes
     - Weigh yourself in the morning
     - Use consistent units
@@ -396,15 +599,25 @@ with st.sidebar:
     - 📅 5-day structured schedules
     - 💪 Based on your fitness level
     - 🏋️ Adapted to available equipment
-    - 🔒 Private and secure
+    - 🔄 Regenerate for variety
     
-    *Always consult with a fitness professional before starting any new exercise routine.*
+    Note: If you don't get all 5 days, click "Generate Again"
     """)
+    
+    # Show generation stats if plan exists
+    if st.session_state.workout_plan:
+        days = count_days_in_plan(st.session_state.workout_plan)
+        st.markdown("---")
+        st.markdown("### 📊 Current Plan Stats")
+        st.markdown(f"- Days included: {days}/5")
+        st.markdown(f"- Generation attempts: {st.session_state.generation_attempts}")
+        if days < 5:
+            st.markdown("⚠️ Tip: Click 'Generate Again' for more days")
     
     st.markdown("---")
     st.markdown("### 📝 Quick Example")
     st.markdown("""
-    **Try this example:**
+    Try this example:
     - Name: Sarah Johnson
     - Gender: Female
     - Height: 165 cm
@@ -415,3 +628,4 @@ with st.sidebar:
     
     BMI: 21.3 (Normal)
     """)
+    
