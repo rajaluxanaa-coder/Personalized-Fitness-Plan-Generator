@@ -1,10 +1,10 @@
-Personalized-Fitness-Plan-Generator - Milestone 2: AI-Powered 5-Day Workout Plan Generator
+##Personalized-Fitness-Plan-Generator - Milestone 2: AI-Powered 5-Day Workout Plan Generator
 
-📌 Objective
+##📌 Objective
 
 The objective of this milestone is to enhance the Fitness Profile & BMI Calculator by integrating an AI-powered 5-day workout plan generator that creates personalized exercise schedules based on user profiles, BMI categories, fitness goals, and available equipment.
 
-📊 BMI Formula Explanation
+##📊 BMI Formula Explanation
 
 BMI (Body Mass Index) is calculated using the following formula:
 
