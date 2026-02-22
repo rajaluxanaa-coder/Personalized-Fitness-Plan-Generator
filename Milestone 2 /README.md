@@ -1,10 +1,10 @@
-#Personalized-Fitness-Plan-Generator - Milestone 2: AI-Powered 5-Day Workout Plan Generator
+# Personalized-Fitness-Plan-Generator - Milestone 2: AI-Powered 5-Day Workout Plan Generator
 
-##📌 Objective
+## 📌 Objective
 
 The objective of this milestone is to enhance the Fitness Profile & BMI Calculator by integrating an AI-powered 5-day workout plan generator that creates personalized exercise schedules based on user profiles, BMI categories, fitness goals, and available equipment.
 
-##📊 BMI Formula Explanation
+## 📊 BMI Formula Explanation
 
 BMI (Body Mass Index) is calculated using the following formula:
 
@@ -17,7 +17,7 @@ Where:
 · **Weight** is measured in kilograms (kg)
 · **Height** is measured in meters (m)
 
-##BMI Categories:
+### BMI Categories:
 
 Category BMI Range Health Recommendation
 Underweight < 18.5 Focus on muscle building & nutrient-dense foods
@@ -25,7 +25,7 @@ Normal Weight 18.5 - 24.9 Maintain balanced diet & regular exercise
 Overweight 25 - 29.9 Combine cardio with strength training
 Obese ≥ 30 Consult healthcare providers for safe weight management
 
-✨ Features Implemented
+## ✨ Features Implemented
 
 1. Comprehensive User Profile Creation
 
