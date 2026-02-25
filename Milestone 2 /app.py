@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -9,20 +8,38 @@ from prompt_builder import build_prompt  # Import your prompt builder
 st.set_page_config(
     page_title="Fitness Profile & BMI Calculator",
     page_icon="💪",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="auto"
 )
 
-# Custom CSS (keep your existing CSS)
+# Custom CSS - UPDATED for better mobile responsiveness
 st.markdown("""
 <style>
     .main {
-        padding: 2rem;
+        padding: 1rem;
+    }
+    @media (max-width: 768px) {
+        .main {
+            padding: 0.5rem;
+        }
+        .stButton button {
+            font-size: 14px;
+            padding: 0.5rem;
+        }
     }
     .stButton button {
         width: 100%;
         background-color: #4CAF50;
         color: white;
         font-weight: bold;
+        border-radius: 5px;
+        border: none;
+        padding: 0.75rem;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    .stButton button:hover {
+        background-color: #45a049;
     }
     .bmi-card {
         padding: 20px;
@@ -30,18 +47,152 @@ st.markdown("""
         background-color: #f8f9fa;
         border-left: 5px solid #4CAF50;
         margin: 10px 0;
+        word-wrap: break-word;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .category-underweight { color: #3498db; font-weight: bold; }
     .category-normal { color: #2ecc71; font-weight: bold; }
     .category-overweight { color: #f39c12; font-weight: bold; }
     .category-obese { color: #e74c3c; font-weight: bold; }
     .workout-plan {
-        background-color: #f0f2f6;
-        padding: 20px;
+        background-color: #ffffff;
+        padding: 25px;
         border-radius: 10px;
         margin: 20px 0;
         white-space: pre-wrap;
-        font-family: monospace;
+        word-wrap: break-word;
+        overflow-x: auto;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        font-size: 16px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    /* Mobile specific styles */
+    @media (max-width: 768px) {
+        .workout-plan {
+            padding: 15px;
+            font-size: 14px;
+            margin: 10px -5px;
+            border-radius: 8px;
+        }
+        h1, h2, h3 {
+            word-wrap: break-word;
+            font-size: 1.5rem;
+        }
+        .stExpander {
+            border: none;
+        }
+        .streamlit-expanderHeader {
+            font-size: 16px;
+            padding: 12px !important;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .row-widget.stButton {
+            margin-bottom: 10px;
+        }
+        div[data-testid="column"] {
+            width: 100% !important;
+            flex: 1 1 100% !important;
+            min-width: 100% !important;
+            padding: 5px 0 !important;
+        }
+        .stTextInput, .stNumberInput, .stSelectbox, .stMultiselect {
+            margin-bottom: 15px;
+        }
+        div[data-testid="stVerticalBlock"] {
+            gap: 0.5rem;
+        }
+        .stRadio > div {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .stRadio label {
+            padding: 8px 0;
+        }
+    }
+    /* Tablet specific styles */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .workout-plan {
+            font-size: 15px;
+            padding: 18px;
+        }
+    }
+    /* Improve table responsiveness if any tables appear */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        border-collapse: collapse;
+        width: 100%;
+        margin: 10px 0;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border: 1px solid #ddd;
+        min-width: 100px;
+    }
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    /* Ensure cards don't overflow */
+    div[data-testid="stExpander"] {
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+    /* Style for download button */
+    .stDownloadButton button {
+        background-color: #2196F3 !important;
+    }
+    .stDownloadButton button:hover {
+        background-color: #1976D2 !important;
+    }
+    /* Success and error message styling */
+    .stAlert {
+        border-radius: 8px;
+        padding: 12px;
+        margin: 10px 0;
+    }
+    /* Sidebar styling for mobile */
+    @media (max-width: 768px) {
+        section[data-testid="stSidebar"] {
+            width: 100% !important;
+            min-width: 100% !important;
+        }
+    }
+    /* Workout plan headings */
+    .workout-plan h1 {
+        font-size: 24px;
+        color: #333;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    .workout-plan h2 {
+        font-size: 20px;
+        color: #4CAF50;
+        margin-top: 15px;
+        margin-bottom: 8px;
+    }
+    .workout-plan h3 {
+        font-size: 18px;
+        color: #666;
+        margin-top: 12px;
+        margin-bottom: 6px;
+    }
+    .workout-plan ul, .workout-plan ol {
+        margin: 10px 0;
+        padding-left: 20px;
+    }
+    .workout-plan li {
+        margin: 5px 0;
+    }
+    .workout-plan p {
+        margin: 10px 0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -56,7 +207,7 @@ if 'profile_created' not in st.session_state:
     st.session_state.profile_data = {}
     st.session_state.workout_plan = None
 
-# Form validation function (updated to include age validation)
+# Form validation function
 def validate_inputs(name, age, height, weight, gender):
     errors = []
     
@@ -138,7 +289,7 @@ with st.form("fitness_form"):
         else:
             with st.spinner("🤖 AI is generating your personalized workout plan..."):
                 try:
-                    # Build the prompt (update your prompt_builder to include age)
+                    # Build the prompt
                     prompt, bmi, bmi_status = build_prompt(
                         name, age, gender, height, weight, 
                         fitness_goal, fitness_level, equipment
@@ -210,14 +361,43 @@ if st.session_state.profile_created:
     st.subheader("🤖 AI-Generated Personalized Workout Plan")
     
     if st.session_state.workout_plan:
-        with st.expander("📋 View Your 5-Day Workout Plan", expanded=True):
-            st.markdown(f"""
-            <div class="workout-plan">
-                {st.session_state.workout_plan}
-            </div>
-            """, unsafe_allow_html=True)
+        # Simple success message without debug info
+        st.success(f"✅ Your personalized workout plan is ready!")
+        
+        # Create tabs for different viewing options (removed Debug Info tab)
+        tab1, tab2 = st.tabs(["📋 Formatted View", "📝 Raw Text"])
+        
+        with tab1:
+            # Display with proper markdown formatting
+            st.markdown("### Your 5-Day Workout Plan")
+            st.markdown("---")
+            
+            # Use markdown to display the workout plan
+            st.markdown(st.session_state.workout_plan)
+            
+            # Add download button for the plan
+            st.download_button(
+                label="📥 Download Workout Plan",
+                data=st.session_state.workout_plan,
+                file_name=f"workout_plan_{data['name'].replace(' ', '_')}_{datetime.now().strftime('%Y%m%d')}.txt",
+                mime="text/plain",
+                use_container_width=True
+            )
+        
+        with tab2:
+            # Display in a text area for easy copying
+            st.text_area(
+                "Raw workout plan (select all and copy):", 
+                st.session_state.workout_plan, 
+                height=400,
+                key="raw_plan"
+            )
+            st.caption("👆 Select all text above and copy (Ctrl+A, Ctrl+C or long press on mobile)")
+    else:
+        st.warning("⚠️ No workout plan generated yet. Please submit the form to generate a plan.")
     
     # Action buttons
+    st.markdown("---")
     col9, col10, col11 = st.columns(3)
     
     with col9:
@@ -228,7 +408,7 @@ if st.session_state.profile_created:
             st.rerun()
     
     with col10:
-        # Export profile data
+        # Export full profile data
         profile_text = f"""
 FITNESS PROFILE REPORT
 Generated: {data['timestamp']}
@@ -247,11 +427,11 @@ Experience Level: {data['fitness_level']}
 Available Equipment: {', '.join(data['equipment'])}
 
 WORKOUT PLAN:
-{st.session_state.workout_plan}
+{st.session_state.workout_plan if st.session_state.workout_plan else 'No plan generated'}
         """
         
         st.download_button(
-            label="📥 Download Profile",
+            label="📥 Download Full Profile",
             data=profile_text,
             file_name=f"fitness_profile_{data['name'].replace(' ', '_')}.txt",
             mime="text/plain",
