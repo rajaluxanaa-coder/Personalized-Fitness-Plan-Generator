@@ -29,7 +29,7 @@ Where:
 ## ✨ Features Implemented
 
 ### 1. Comprehensive User Profile Creation
-- **Personal Information:** Name, Gender, Height (cm), Weight (kg)
+- **Personal Information:** Name, Gender, Height (cm), Weight (kg),Age 
 - **Fitness Details:**
   - Fitness Goal (Build Muscle, Weight Loss, Strength Gain, Abs Building, Flexible)
   - Fitness Level (Beginner, Intermediate, Advanced)
