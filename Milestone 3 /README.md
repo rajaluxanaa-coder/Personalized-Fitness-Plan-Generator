@@ -11,7 +11,7 @@
   
   <h3>A secure authentication system with email OTP verification</h3>
   
-  **[View Live Demo]([https://fitness-ai-dsqq.onrender.com])** 👈 **CLICK HERE TO TEST THE LIVE APP**
+  **[View Live Demo](https://fitness-ai-dsgq.onrender.com)** 👈 **CLICK HERE TO TEST THE LIVE APP**
   
 </div>
 
