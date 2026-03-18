@@ -1,1 +1,20 @@
+# Core Flask
+flask==2.3.0
+flask-sqlalchemy==3.0.0
+flask-mail==0.9.1
+flask-login==0.6.2
+flask-limiter==3.3.1
 
+# Database
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.19
+
+# Environment
+python-dotenv==1.0.0
+
+# APIs
+requests==2.31.0
+sendgrid==6.10.0
+
+# Production server
+gunicorn==20.1.0
